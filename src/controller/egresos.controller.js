@@ -123,19 +123,19 @@ egresosController.eliminarEgresoPorId = async (req, res) => {
 };
 
 egresosController.modificarEgresoPorId = async (req, res) => {
+
   try {
     const nuevosDatos = req.body;
     const egresoId = req.params.id;
     const tenantId = req.tenantId;
-
+    
     const egresoModificado = await modificarEgresoPorId(
       egresoId,
       nuevosDatos,
       tenantId
     );
-
     ResponseStructure.status = 200;
-    ResponseStructure.message = "Egreso modificado exitosamente";
+    ResponseStructure.message = "Egreso modificado exitosamemte";
     ResponseStructure.data = egresoModificado;
 
     res.status(200).send(ResponseStructure);
@@ -146,7 +146,6 @@ egresosController.modificarEgresoPorId = async (req, res) => {
     for (let i in errorsCatch) {
       errors[i] = errorsCatch[i].message;
     }
-    console.error("Error al modificar el egreso:", error);
 
     ResponseStructure.status = 400;
     ResponseStructure.message = "Error al modificar el egreso";

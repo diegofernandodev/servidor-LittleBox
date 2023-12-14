@@ -10,22 +10,11 @@ const getCategoriasPredeterminadas=async()=>{
   return categorias;
 }
 
-// const obtenerCategorias = async (tenantId) => {
-  
-//   const categorias = await Categoria.find({ tenantId })
-//   .populate({
-//     path: "empresaCategoria",
-//     model: EmpresaModel,
-//   })
-//   return categorias;
-// };
+
 const obtenerCategorias = async (tenantId) => {
   
   const categoriasTenant = await Categoria.find({ tenantId })
-  // .populate({
-  //   path: "empresaCategoria",
-  //   model: EmpresaModel,
-  // })
+  
 
   const categoriasPredeterminadas = await getCategoriasPredeterminadas();
 

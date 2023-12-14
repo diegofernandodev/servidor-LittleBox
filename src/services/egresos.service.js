@@ -17,7 +17,7 @@ const obtenerEgresos = async (tenantId) => {
 };
 
 const obtenerEgresoPorId = async (egresoId, tenantId) => {
-  const egreso = await Egreso.findOne({ _id: egresoId, tenantId })
+  const egreso = await Egreso.findById({ _id: egresoId, tenantId })
     .populate({
       path: "categoria",
       model: categoriaModel,
@@ -71,7 +71,7 @@ const modificarEgresoPorId = async (egresoId, nuevosDatos, tenantId) => {
     { new: true }
   );
   if (!egresoModificado) {
-    throw new Error("Egreso no encontrado");
+    throw new Error("egreso no encontrado");
   }
 
   return egresoModificado;
