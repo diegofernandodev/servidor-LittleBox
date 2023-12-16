@@ -11,7 +11,8 @@ const categoriasController = {};
 categoriasController.obtenerCategoriaId = async (req, res) => {
   try {
     const categoriaId = req.params.id;
-    const verCategoria = await obtenerCategoriaId(categoriaId);
+    const tenantId = req.tenantId;
+    const verCategoria = await obtenerCategoriaId(categoriaId,tenantId);
     ResponseStructure.status = 200;
     ResponseStructure.message = "Categoria encontrada exitosamente";
     ResponseStructure.data = verCategoria;
@@ -21,8 +22,8 @@ categoriasController.obtenerCategoriaId = async (req, res) => {
     console.error("Error al obtener la categoria:", error);
 
     ResponseStructure.status = 404;
-    ResponseStructure.message = "Categoria no encontrada";
-    ResponseStructure.data = null;
+    ResponseStructure.message = "Error al obtener categoria";
+    ResponseStructure.data = error.message;
 
     res.status(404).json(ResponseStructure);
   }
@@ -85,6 +86,7 @@ categoriasController.eliminarCategoriaId = async (req, res) => {
   try {
     const categoriaId = req.params.id;
     const tenantId = req.tenantId;
+    
     const categoriaEliminada = await eliminarCategoriaId(categoriaId,tenantId);
     ResponseStructure.status = 200;
     ResponseStructure.message = "Categoria eliminada exitosamemte";
@@ -101,8 +103,8 @@ categoriasController.eliminarCategoriaId = async (req, res) => {
 
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al eliminar la categoria";
-    ResponseStructure.data = errors;
-
+    ResponseStructure.data = error.message;
+  
     res.status(500).json(ResponseStructure);
   }
 };

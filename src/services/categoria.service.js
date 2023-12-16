@@ -25,12 +25,17 @@ const obtenerCategorias = async (tenantId) => {
 
 
 const obtenerCategoriaId = async (categoriaId,tenantId) => {
-  const categoria = await Categoria.findById({ _id: categoriaId, tenantId })
-  // .populate({
-  //   path: "empresaCategoria",
-  //   model: EmpresaModel,
-  // })
-  return categoria;
+  try {
+    const categoria = await Categoria.findById({ _id: categoriaId, tenantId });
+
+    if (!categoria || categoria.tenantId !== tenantId) {
+      throw new Error("_id de categoria o tenant no válidos");
+    }
+
+    return categoria;
+  } catch (error) {
+    throw error; // Propaga el error para que sea manejado en el controlador
+  }
 };
 
 const guardarCategoria = async (categoria, tenantId) => {
@@ -45,15 +50,24 @@ const guardarCategoria = async (categoria, tenantId) => {
 };
 
 const eliminarCategoriaId = async (categoriaId, tenantId) => {
-  const categoria = await Categoria.findOne({ _id: categoriaId, tenantId });
+    
+  try {
+    const categoria = await Categoria.findOne({ _id: categoriaId, tenantId });
 
-  if (!categoria) {
-    throw new Error("Categoria no encontrada");
-  } else if (categoria.tenantId !== tenantId) {
-    throw new Error("Tenant incorrecto");
+    if (!categoria || categoria.tenantId !== tenantId) {
+      throw new Error("_id de categoria o tenant no válidos");
+    }
+
+    const categoriaEliminada = await Categoria.findOneAndDelete({
+      _id: categoriaId,
+      tenantId,
+    });
+
+    return categoriaEliminada;
+  } catch (error) {
+    throw error; // Propaga el error para que sea manejado en el controlador
   }
-
-  return await Categoria.findOneAndDelete({ _id: categoriaId, tenantId });
+  
 };
 
 const modificarCategoriaPorId = async (categoriaId, nuevosDatos, tenantId) => {
