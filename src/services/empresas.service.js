@@ -1,57 +1,76 @@
 const Empresa = require("../models/empresas.Model");
 
 const obtenerEmpresas = async () => {
-  const empresas = await Empresa.find()
-  return empresas;
+  try {
+    const empresas = await Empresa.find();
+    return empresas;
+  } catch (error) {
+    throw new Error(`Error al obtener las empresas: ${error.message}`);
+  }
 };
 
 const obtenerEmpresaPorId = async (empresaId) => {
-  const empresa = await Empresa.findOne({ _id: empresaId })
-  return empresa;
+  try {
+    const empresa = await Empresa.findById(empresaId);
+    return empresa;
+  } catch (error) {
+    throw new Error(`Error al obtener la empresa por ID: ${error.message}`);
+  }
 };
 
 const guardarEmpresa = async (empresa) => {
-
-  const nuevaEmpresa = new Empresa(empresa);
-
-  // Guardar la empresa
-  const empresaGuardada = await nuevaEmpresa.save();
-
-  return empresaGuardada;
+  try {
+    const nuevaEmpresa = new Empresa(empresa);
+    const empresaGuardada = await nuevaEmpresa.save();
+    return empresaGuardada;
+  } catch (error) {
+    throw new Error(`Error al guardar la empresa: ${error.message}`);
+  }
 };
 
 const actualizarEmpresaId = async (idEmpresaActual, datosEmpresaActualizado) => {
-  const filter = { _id: idEmpresaActual };
-  const update = {
-    $set: datosEmpresaActualizado,
-  };
-
-  await Empresa.findOneAndUpdate(filter, update);
-  return await Empresa.findOne(filter);
+  try {
+    const empresaActualizada = await Empresa.findByIdAndUpdate(
+      idEmpresaActual,
+      { $set: datosEmpresaActualizado },
+      { new: true }
+    );
+    return empresaActualizada;
+  } catch (error) {
+    throw new Error(`Error al actualizar la empresa por ID: ${error.message}`);
+  }
 };
-
 
 const eliminarEmpresaPorId = async (empresaId) => {
-  const empresa = await Empresa.findOne({_id: empresaId});
+  try {
+    const empresa = await Empresa.findById(empresaId);
 
-  if (!empresa) {
-    throw new Error("Empresa no encontrada");
-  } 
-  return await Empresa.findOneAndDelete({ _id: empresaId});
+    if (!empresa) {
+      throw new Error("Empresa no encontrada");
+    }
+
+    return await Empresa.findByIdAndDelete(empresaId);
+  } catch (error) {
+    throw new Error(`Error al eliminar la empresa por ID: ${error.message}`);
+  }
 };
 
-
 const modificarEmpresaPorId = async (empresaId, nuevosDatos) => {
-  const empresaModificada = await Empresa.findOneAndUpdate(
-    { _id: empresaId },
-    nuevosDatos,
-    { new: true }
-  );
-  if (!empresaModificada) {
-    throw new Error("Empresa no encontrada");
-  }
+  try {
+    const empresaModificada = await Empresa.findByIdAndUpdate(
+      empresaId,
+      nuevosDatos,
+      { new: true }
+    );
 
-  return empresaModificada;
+    if (!empresaModificada) {
+      throw new Error("Empresa no encontrada");
+    }
+
+    return empresaModificada;
+  } catch (error) {
+    throw new Error(`Error al modificar la empresa por ID: ${error.message}`);
+  }
 };
 
 module.exports = {

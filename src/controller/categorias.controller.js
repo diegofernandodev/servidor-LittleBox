@@ -37,16 +37,16 @@ categoriasController.obtenerCategorias = async (req, res) => {
     ResponseStructure.data = listaCategorias;
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
+    // const errorsCatch = error.errors;
+    // const errors = {};
 
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
+    // for (let i in errorsCatch) {
+    //   errors[i] = errorsCatch[i].message;
+    // }
 
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al obtener categorias";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(500).json(ResponseStructure);
   }
@@ -66,16 +66,16 @@ categoriasController.guardarCategoria = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
+    // const errorsCatch = error.errors;
+    // const errors = {};
 
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
+    // for (let i in errorsCatch) {
+    //   errors[i] = errorsCatch[i].message;
+    // }
 
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al guardar la categoria";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(500).json(ResponseStructure);
   }
@@ -94,13 +94,6 @@ categoriasController.eliminarCategoriaId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
-
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
-
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al eliminar la categoria";
     ResponseStructure.data = error.message;
@@ -128,16 +121,16 @@ categoriasController.modificarCategoriaPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
+    // const errorsCatch = error.errors;
+    // const errors = {};
 
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
+    // for (let i in errorsCatch) {
+    //   errors[i] = errorsCatch[i].message;
+    // }
 
     ResponseStructure.status = 400;
     ResponseStructure.message = "Error al modificar la categoria";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(400).json(ResponseStructure);
   }

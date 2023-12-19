@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const {
   obtenerEgresoPorId,
   obtenerEgresos,
@@ -22,11 +24,10 @@ egresosController.obtenerEgresoPorId = async (req, res) => {
 
     res.status(200).json(ResponseStructure);
   } catch (error) {
-    console.error("Error al obtener el egreso:", error);
-
+    
     ResponseStructure.status = 404;
     ResponseStructure.message = "Egreso no encontrado";
-    ResponseStructure.data = null;
+    ResponseStructure.data = error.message;
 
     res.status(404).json(ResponseStructure);
   }
@@ -41,16 +42,16 @@ egresosController.obtenerEgresos = async (req, res) => {
     ResponseStructure.data = listaEgresos;
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
+    // const errorsCatch = error.errors;
+    // const errors = {};
 
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
+    // for (let i in errorsCatch) {
+    //   errors[i] = errorsCatch[i].message;
+    // }
 
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al obtener egresos";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(500).json(ResponseStructure);
   }
@@ -77,7 +78,8 @@ egresosController.guardarEgreso = async (req, res) => {
   } catch (error) {
     console.error("Error en el controlador al guardar el egreso:", error);
 
-    const status = error.name === "ValidationError" ? 400 : 500;
+    // const status = error.name === "ValidationError" ? 400 : 500;
+    const status = error instanceof mongoose.Error.ValidationError ? 400 : 500;
 
     ResponseStructure.status = status;
     ResponseStructure.message = "Error al guardar el egreso";
@@ -101,24 +103,11 @@ egresosController.eliminarEgresoPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    console.log(error);
-    let status = 500;
-    let message = "Error al eliminar el egreso";
-    let data = {};
-
-    if (error.message === "Egreso no encontrado") {
-      status = 404;
-      message = "Egreso no encontrado";
-    } else if (error.message === "Tenant incorrecto") {
-      status = 403;
-      message = "Tenant incorrecto";
-    }
-
-    ResponseStructure.status = status;
-    ResponseStructure.message = message;
-    ResponseStructure.data = data;
-
-    res.status(status).json(ResponseStructure);
+    ResponseStructure.status = 500;
+    ResponseStructure.message = "Error al eliminar el egreso";
+    ResponseStructure.data = error.message;
+  
+    res.status(500).json(ResponseStructure);
   }
 };
 
@@ -140,16 +129,16 @@ egresosController.modificarEgresoPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
+    // const errorsCatch = error.errors;
+    // const errors = {};
 
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
+    // for (let i in errorsCatch) {
+    //   errors[i] = errorsCatch[i].message;
+    // }
 
     ResponseStructure.status = 400;
     ResponseStructure.message = "Error al modificar el egreso";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(400).json(ResponseStructure);
   }

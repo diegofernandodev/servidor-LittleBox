@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const {
   obtenerTerceros,
   obtenerTerceroPorId,
@@ -20,11 +21,9 @@ tercerosController.obtenerTerceros = async (req, res) => {
 
     res.status(200).json(ResponseStructure);
   } catch (error) {
-    console.error("Error al obtener los terceros:", error);
-
     ResponseStructure.status = 404;
     ResponseStructure.message = "Terceros no encontrados";
-    ResponseStructure.data = null;
+    ResponseStructure.data = error.message;
 
     res.status(ResponseStructure.status).json(ResponseStructure);
   }
@@ -42,11 +41,9 @@ tercerosController.obtenerTerceroPorId = async (req, res) => {
 
     res.status(200).json(ResponseStructure);
   } catch (error) {
-    console.error("Error al obtener el tercero:", error);
-
     ResponseStructure.status = 404;
     ResponseStructure.message = "Tercero no encontrado";
-    ResponseStructure.data = null;
+    ResponseStructure.data = error.message;
 
     res.status(404).json(ResponseStructure);
   }
@@ -67,9 +64,9 @@ tercerosController.guardarTercero = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    console.error("Error en el controlador al guardar el tercero:", error);
-
-    const status = error.name === "ValidationError" ? 400 : 500;
+    
+    // const status = error.name === "ValidationError" ? 400 : 500;
+    const status = error instanceof mongoose.Error.ValidationError ? 400 : 500;
 
     ResponseStructure.status = status;
     ResponseStructure.message = "Error al guardar el tercero";
@@ -93,23 +90,12 @@ tercerosController.eliminarTerceroPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    let status = 500;
-    let message = "Error al eliminar el tercero";
-    let data = {};
-
-    if (error.message === "tercero no encontrado") {
-      status = 404;
-      message = "Tercero no encontrado";
-    } else if (error.message === "Tenant incorrecto") {
-      status = 403;
-      message = "Tenant incorrecto";
-    }
-
-    ResponseStructure.status = status;
-    ResponseStructure.message = message;
-    ResponseStructure.data = data;
-
-    res.status(ResponseStructure.status).json(ResponseStructure);
+    ResponseStructure.status = 500;
+    ResponseStructure.message = "Error al eliminar el tercero";
+    ResponseStructure.data = error.message;
+  
+    res.status(500).json(ResponseStructure);
+    // res.status(ResponseStructure.status).json(ResponseStructure);
   }
 };
 
@@ -131,17 +117,10 @@ tercerosController.modificarTerceroPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
-
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
-    console.error("Error al modificar el tercero:", error);
 
     ResponseStructure.status = 400;
     ResponseStructure.message = "Error al modificar el tercero";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(ResponseStructure.status).json(ResponseStructure);
   }

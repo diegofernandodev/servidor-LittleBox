@@ -21,11 +21,11 @@ empresasController.obtenerEmpresaPorId = async (req, res) => {
 
     res.status(200).json(ResponseStructure);
   } catch (error) {
-    console.error("Error al obtener la empresa:", error);
+    // console.error("Error al obtener la empresa:", error);
 
     ResponseStructure.status = 404;
     ResponseStructure.message = "Empresa no encontrada";
-    ResponseStructure.data = null;
+    ResponseStructure.data = error.message;
 
     res.status(404).json(ResponseStructure);
   }
@@ -39,16 +39,16 @@ empresasController.obtenerEmpresas = async (req, res) => {
     ResponseStructure.data = listaEmpresas;
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
+    // const errorsCatch = error.errors;
+    // const errors = {};
 
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
+    // for (let i in errorsCatch) {
+    //   errors[i] = errorsCatch[i].message;
+    // }
 
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al obtener empresas";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(500).json(ResponseStructure);
   }
@@ -71,7 +71,7 @@ empresasController.guardarEmpresa = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    console.error("Error en el controlador al guardar la empresa:", error);
+    // console.error("Error en el controlador al guardar la empresa:", error);
 
     const status = error.name === "ValidationError" ? 400 : 500;
 
@@ -96,21 +96,21 @@ empresasController.eliminarEmpresaPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    console.log(error);
-    let status = 500;
-    let message = "Error al eliminar la empresa";
-    let data = {};
+    // console.log(error);
+    // let status = 500;
+    // let message = "Error al eliminar la empresa";
+    // let data = {};
 
-    if (error.message === "Empresa no encontrada") {
-      status = 404;
-      message = "Empresa no encontrada";
-    } 
+    // if (error.message === "Empresa no encontrada") {
+    //   status = 404;
+    //   message = "Empresa no encontrada";
+    // } 
 
-    ResponseStructure.status = status;
-    ResponseStructure.message = message;
-    ResponseStructure.data = data;
+    ResponseStructure.status = 500;
+    ResponseStructure.message = "Error al eliminar empresa";
+    ResponseStructure.data = error.message;
 
-    res.status(status).json(ResponseStructure);
+    res.status(500).json(ResponseStructure);
   }
 };
 
@@ -130,17 +130,17 @@ empresasController.modificarEmpresaPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    const errorsCatch = error.errors;
-    const errors = {};
+    // const errorsCatch = error.errors;
+    // const errors = {};
 
-    for (let i in errorsCatch) {
-      errors[i] = errorsCatch[i].message;
-    }
-    console.error("Error al modificar la empresa:", error);
+    // for (let i in errorsCatch) {
+    //   errors[i] = errorsCatch[i].message;
+    // }
+    // console.error("Error al modificar la empresa:", error);
 
     ResponseStructure.status = 400;
     ResponseStructure.message = "Error al modificar la empresa";
-    ResponseStructure.data = errors;
+    ResponseStructure.data = error.message;
 
     res.status(400).json(ResponseStructure);
   }
