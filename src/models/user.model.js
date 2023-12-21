@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const usuarioSchema = new Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: [true, "El nombre de usuario es requerido"],
@@ -16,16 +16,13 @@ const usuarioSchema = new Schema({
   password: {
     type: String,
     required: [true, "La contraseña es requerida"],
-    minLength: 8,
-    validator: (value) => {
-      return /[a-zA-Z0-9@#$%^&*_~]/.test(value);
-    },
-    message: "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un símbolo",
+    // minLength: 8,
+    // validator: (value) => {
+    //   return /[a-zA-Z0-9@#$%^&*_~]/.test(value);
+    // },
+    // message: "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un símbolo",
   },
-  fechaNacimiento: {
-    type: Date,
-  },
-  correoElectronico: {
+  email: {
     type: String,
     required: [true, "El correo electrónico es requerido"],
     validator: (value) => {
@@ -33,43 +30,48 @@ const usuarioSchema = new Schema({
     },
     message: "El correo electrónico no es válido",
   },
-  empresaUsuario: {
+  empresaUser: {
     type: Schema.Types.ObjectId,
     ref: "Empresa",
     required: [true, "La empresa es requerida"],
   },
-  fechaCreacion: {
-    type: Date,
-    default: Date.now(),
-  },
-  fechaUltimaActualizacion: {
-    type: Date,
-    default: Date.now(),
-  },
+  // fechaCreacion: {
+  //   type: Date,
+  //   default: Date.now(),
+  // },
+  // fechaUltimaActualizacion: {
+  //   type: Date,
+  //   default: Date.now(),
+  // },
   estado: {
     type: String,
     enum: ["activo", "inactivo"],
     default: "activo",
   },
-  roles: {
-    type: Array,
-    default: [],
+  rol: {
+    type: Schema.Types.ObjectId,
+    ref: "rol",
+    required: [true, "El rol es requerido"],
   },
-  nombre: {
+  name: {
     type: String,
     required: [true, "El nombre es requerido"],
     minLength: 3,
     maxLength: 128,
   },
-  telefono: {
+  // telefono: {
+  //   type: String,
+  //   required: [true, "El teléfono es requerido"],
+  //   minLength: 7,
+  //   maxLength: 15,
+  //   validator: (value) => {
+  //     return /^[0-9]+$/.test(value);
+  //   },
+  //   message: "El teléfono debe ser un número",
+  // },
+  imagenFirma:{
     type: String,
-    required: [true, "El teléfono es requerido"],
-    minLength: 7,
-    maxLength: 15,
-    validator: (value) => {
-      return /^[0-9]+$/.test(value);
-    },
-    message: "El teléfono debe ser un número",
+    required: [true, "La imagen de la firma es requerida"],
   },
   tenantId: {
     type: String,
@@ -78,4 +80,4 @@ const usuarioSchema = new Schema({
 });
 
 
-module.exports = model("Usuario", usuarioSchema,"usuariosEmpresas");
+module.exports = model("User", userSchema,"usuariosEmpresas");
