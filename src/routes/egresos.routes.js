@@ -9,6 +9,7 @@ const {
 } = require("../controller/egresos.controller");
 
 const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
+const verificarTokenMiddleware = require('../middleware/validarTokenMiddleware');
 
 
 router.get("/", (req, res) => {
@@ -28,6 +29,6 @@ router.put("/modificarEgreso/:id", multitenancyMiddleware,modificarEgresoPorId);
 router.delete("/eliminarEgreso/:id", multitenancyMiddleware,eliminarEgresoPorId);
 
 // Ruta para guardar un nuevo egreso
-router.post("/guardarEgreso", multitenancyMiddleware,guardarEgreso);
+router.post("/guardarEgreso", verificarTokenMiddleware,guardarEgreso);
 
 module.exports = router;

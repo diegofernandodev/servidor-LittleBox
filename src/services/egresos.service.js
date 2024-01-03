@@ -3,29 +3,34 @@ const categoriaModel = require("../models/categoria.model");
 const terceroModel = require("../models/terceros.Model");
 const counterService = require("../services/counter.service");
 
-const obtenerEgresos = async (tenantId) => {
-
+const obtenerEgresos = async (token) => {
   try {
-    // Verificar que el tenantId coincide con el tenantId de los egresos
-  const egresosExisten = await Egreso.exists({ tenantId });
+    // Verificar y obtener el tenantId desde el token
+    const decodedToken = jwt.verify(token, 'tu_secreto');
+    const tenantId = decodedToken.tenantId;
 
-  if (!egresosExisten) {
-    throw new Error("TenantId proporcionado no es valido o no se encuentra en la base de datos");
-  }
-  const egresos = await Egreso.find({ tenantId })
-    .populate({
-      path: "categoria",
-      model: categoriaModel,
-    })
-    .populate({
-      path: "tercero",
-      model: terceroModel,
-    });
-  return egresos;
+    // Verificar que el tenantId coincide con el tenantId de los egresos
+    const egresosExisten = await Egreso.exists({ tenantId });
+
+    if (!egresosExisten) {
+      throw new Error("TenantId proporcionado no es válido o no se encuentra en la base de datos");
+    }
+
+    // Obtener la lista de egresos
+    const egresos = await Egreso.find({ tenantId })
+      .populate({
+        path: "categoria",
+        model: categoriaModel,
+      })
+      .populate({
+        path: "tercero",
+        model: terceroModel,
+      });
+
+    return egresos;
   } catch (error) {
     throw error; // Propaga el error para que sea manejado en el controlador
   }
-  
 };
 
 const obtenerEgresoPorId = async (egresoId, tenantId) => {

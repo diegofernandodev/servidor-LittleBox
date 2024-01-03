@@ -6,31 +6,40 @@ const {
     obtenerUsuarioPorId,
     eliminarUsuarioPorId,
     modificarUsuarioPorId,
-    loginUser,
 } = require("../controller/user.controller");
+const{resetPassword, restablecerPassword, logout} = require("../controller/login.controller")
 
-const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
+// const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
+const verificarTokenMiddleware = require('../middleware/validarTokenMiddleware');
 
 router.get("/", (req, res) => {
   res.send("LittleBox");
 });
 
 // Ruta para obtener todos los usuarios
-router.get("/obtenerTodosLosUsuarios", multitenancyMiddleware, obtenerUsuarios);
+router.get("/obtenerTodosLosUsuarios", verificarTokenMiddleware, obtenerUsuarios);
 
 // Ruta para obtener un usuario por su ID
-router.get("/obtenerUsuario/:id",multitenancyMiddleware, obtenerUsuarioPorId);
+router.get("/obtenerUsuario/:id",verificarTokenMiddleware, obtenerUsuarioPorId);
 
 // Ruta para modificar un usuario por su ID
-router.put("/modificarUsuario/:id",multitenancyMiddleware, modificarUsuarioPorId);
+router.put("/modificarUsuario",verificarTokenMiddleware, modificarUsuarioPorId);
 
 // Ruta para eliminar un usuario por su ID
-router.delete("/eliminarUsuario/:id",multitenancyMiddleware, eliminarUsuarioPorId);
+router.delete("/eliminarUsuario/:id",verificarTokenMiddleware, eliminarUsuarioPorId);
 
 // Ruta para guardar una nueva categoria
-router.post("/guardarUsuario",multitenancyMiddleware, guardarUsuario);
+router.post("/guardarUsuario",verificarTokenMiddleware, guardarUsuario);
 
-// Ruta para iniciar sesión
-router.post("/login",multitenancyMiddleware, loginUser);
+
+// Ruta para enviar correo de restablecer contraseña
+router.post("/resetPassword",verificarTokenMiddleware, resetPassword);
+
+// Ruta para restablecer la contraseña
+router.put("/newPassword",verificarTokenMiddleware, restablecerPassword);
+
+// Ruta para cerrar sesion
+router.post("/logout",verificarTokenMiddleware, logout);
+
 
 module.exports = router;

@@ -35,20 +35,20 @@ egresosController.obtenerEgresoPorId = async (req, res) => {
 
 egresosController.obtenerEgresos = async (req, res) => {
   try {
-    const tenantId = req.tenantId;
-    const listaEgresos = await obtenerEgresos(tenantId);
-    ResponseStructure.status = 200
+    // Obtener el token desde el encabezado de autorización
+    const token = req.headers.authorization;
+
+    // Obtener la lista de egresos usando el servicio
+    const listaEgresos = await obtenerEgresos(token);
+
+    // Responder con la lista de egresos
+    ResponseStructure.status = 200;
     ResponseStructure.message = "Egresos encontrados exitosamente";
     ResponseStructure.data = listaEgresos;
+
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    // const errorsCatch = error.errors;
-    // const errors = {};
-
-    // for (let i in errorsCatch) {
-    //   errors[i] = errorsCatch[i].message;
-    // }
-
+    // Manejar los errores y responder con el mensaje adecuado
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al obtener egresos";
     ResponseStructure.data = error.message;

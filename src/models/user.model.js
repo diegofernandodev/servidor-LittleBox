@@ -79,5 +79,8 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.methods.generateResetPasswordLink = function (token) {
+  return `http://localhost:4000/newPassword?token=${token}&userId=${this._id}`;
+};
 
 module.exports = model("User", userSchema,"usuariosEmpresas");
