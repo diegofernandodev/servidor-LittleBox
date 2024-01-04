@@ -4,25 +4,27 @@ const empresaModel = require("../models/empresas.Model");
 const rolModel = require("../models/rolesUser.Model");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-// const sgMail = require('@sendgrid/mail');
 const nodemailer = require("nodemailer");
 const mail = require('@sendgrid/mail');
-// const login = require("../services/login.service")
 
-
-
+/**
+ * Función para guardar un nuevo usuario en la base de datos.
+ * @param {Object} user - Objeto con los datos del usuario a guardar.
+ * @param {string} tenantId - Identificador del tenant al que pertenece el usuario.
+ * @returns {Promise<Object>} - Promesa que resuelve con el usuario guardado.
+ */
 const guardarUsuario = async (user, tenantId) => {
     try {
       // Asignar el tenantId al usuario
       user.tenantId = tenantId;
   
-      // Hashear la contraseña (asegúrate de tener el campo password en el objeto usuario)
+      // Hashear la contraseña
       user.password = await bcrypt.hash(user.password, 12);
   
       // Definir campos requeridos
       const camposRequeridos = ['name', 'username', 'password', 'rol', 'estado'];
   
-      // Validar que el objeto user tenga la estructura correcta y campos requeridos
+      // Validar campos requeridos en el objeto user
       const tieneCamposRequeridos = camposRequeridos.every(campo => user[campo]);
       if (!user || !tieneCamposRequeridos) {
         throw new Error("El objeto user no es válido o no contiene campos requeridos");
@@ -38,82 +40,105 @@ const guardarUsuario = async (user, tenantId) => {
     } catch (error) {
       throw new Error(`Error al guardar el usuario: ${error.message}`);
     }
-  };
+};
 
-  const obtenerUsuarios = async (tenantId) => {
-
+/**
+ * Función para obtener todos los usuarios de un tenant.
+ * @param {string} tenantId - Identificador del tenant.
+ * @returns {Promise<Array>} - Promesa que resuelve con un array de usuarios.
+ */
+const obtenerUsuarios = async (tenantId) => {
     try {
       // Verificar que el tenantId coincide con el tenantId de los usuarios
-    const usersExisten = await User.exists({ tenantId });
+      const usersExisten = await User.exists({ tenantId });
   
-    if (!usersExisten) {
-      throw new Error("TenantId proporcionado no es valido o no se encuentra en la base de datos");
-    }
-    const users = await User.find({ tenantId })
-      .populate({
-        path: "empresaUser",
-        model: empresaModel,
-      })
-      .populate({
-        path: "rol",
-        model: rolModel,
-      });
-    return users;
+      if (!usersExisten) {
+        throw new Error("TenantId proporcionado no es valido o no se encuentra en la base de datos");
+      }
+      const users = await User.find({ tenantId })
+        .populate({
+          path: "empresaUser",
+          model: empresaModel,
+        })
+        .populate({
+          path: "rol",
+          model: rolModel,
+        });
+      return users;
     } catch (error) {
-      throw error; // Propaga el error para que sea manejado en el controlador
+      throw error;
     }
-    
-  };
-  const obtenerUsuarioPorId = async (userId, tenantId) => {
+};
 
+/**
+ * Función para obtener un usuario por su ID y tenant.
+ * @param {string} userId - Identificador del usuario.
+ * @param {string} tenantId - Identificador del tenant.
+ * @returns {Promise<Object>} - Promesa que resuelve con el usuario encontrado.
+ */
+const obtenerUsuarioPorId = async (userId, tenantId) => {
     try {
-  
       // Verificar que el tenantId coincide con el tenantId del usuario
-    const userExistent = await User.findOne({ _id: userId, tenantId });
+      const userExistent = await User.findOne({ _id: userId, tenantId });
   
-    if (!userExistent) {
-      throw new Error("TenantId proporcionado no es valido o no se encuentra en la base de datos");
-    }
-    const user = await User.findById({ _id: userId, tenantId })
-    .populate({
-        path: "empresaUser",
-        model: empresaModel,
-      })
+      if (!userExistent) {
+        throw new Error("TenantId proporcionado no es valido o no se encuentra en la base de datos");
+      }
+      const user = await User.findById({ _id: userId, tenantId })
       .populate({
-        path: "rol",
-        model: rolModel,
-      });
-    return user;
+          path: "empresaUser",
+          model: empresaModel,
+        })
+        .populate({
+          path: "rol",
+          model: rolModel,
+        });
+      return user;
     } catch (error) {
       if (error.name === 'CastError' && error.path === '_id') {
         throw new Error("_id proporcionado no es válido o no se encontro en la base de datos");
       } else {
-        throw error; // Propaga el error para que sea manejado en el controlador
+        throw error;
       }
     } 
-  };
+};
 
-  const eliminarUsuarioPorId = async (userId, tenantId) => {
+/**
+ * Función para eliminar un usuario por su ID y tenant.
+ * @param {string} userId - Identificador del usuario.
+ * @param {string} tenantId - Identificador del tenant.
+ * @returns {Promise<Object>} - Promesa que resuelve con el usuario eliminado.
+ */
+const eliminarUsuarioPorId = async (tenantId, userId) => {
     try {
+
       // Verificar que el tenantId coincide con el tenantId del usuario
-    const userExistent = await User.findOne({ _id: userId, tenantId });
+      const userExistent = await User.findOne({ _id: userId, tenantId});
   
-    if (!userExistent) {
-      throw new Error("TenantId proporcionado no es valido o no se encuentra en la base de datos");
-    }
+      if (!userExistent) {
+        throw new Error("TenantId proporcionado no es valido o no se encuentra en la base de datos");
+      }
   
-    const usuarioEliminado = await User.findOneAndDelete({ _id: userId, tenantId });
-    return usuarioEliminado;
+      const usuarioEliminado = await User.findOneAndDelete({ _id: userId, tenantId});
+      return usuarioEliminado;
     } catch (error) {
       if (error.name === 'CastError' && error.path === '_id') {
         throw new Error("_id proporcionado no es válido o no se encontro en la base de datos");
       } else {
-        throw error; // Propaga el error para que sea manejado en el controlador
+        throw error;
       }
     }
-  };
+};
 
-  const modificarUsuarioPorId = async (token, nuevosDatos) => {
+
+/**
+ * Función para modificar un usuario por su ID y tenant.
+ * @param {string} token - Token de autenticación del usuario.
+ * @param {Object} nuevosDatos - Objeto con los nuevos datos del usuario a actualizar.
+ * @returns {Promise<Object>} - Promesa que resuelve con el usuario modificado y un nuevo token.
+ */
+
+  const modificarUsuarioPorId = async (userId, token, nuevosDatos) => {
     try {
       // Decodificar el token para obtener la información del usuario (en este caso, userId, tenantId, email)
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -136,7 +161,7 @@ const guardarUsuario = async (user, tenantId) => {
   
       // El correo electrónico no ha cambiado, continuar con la actualización
       const usuarioModificado = await User.findOneAndUpdate(
-        { _id: decodedToken.userId, tenantId: decodedToken.tenantId },
+        { _id: userId, tenantId: decodedToken.tenantId },
         { $set: nuevosDatos },
         { new: true }
       );

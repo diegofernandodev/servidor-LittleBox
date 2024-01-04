@@ -1,5 +1,10 @@
 const Empresa = require("../models/empresas.Model");
 
+/**
+ * Obtiene todas las empresas.
+ * @returns {Promise<Array>} - Un array de empresas.
+ * @throws {Error} - Se lanza un error si hay algún problema al obtener las empresas.
+ */
 const obtenerEmpresas = async () => {
   try {
     const empresas = await Empresa.find();
@@ -9,6 +14,12 @@ const obtenerEmpresas = async () => {
   }
 };
 
+/**
+ * Obtiene una empresa por su ID.
+ * @param {string} empresaId - El ID de la empresa a obtener.
+ * @returns {Promise<Object|null>} - La empresa encontrada o null si no se encuentra ninguna empresa con el ID dado.
+ * @throws {Error} - Se lanza un error si hay algún problema al obtener la empresa por su ID.
+ */
 const obtenerEmpresaPorId = async (empresaId) => {
   try {
     const empresa = await Empresa.findById(empresaId);
@@ -18,6 +29,12 @@ const obtenerEmpresaPorId = async (empresaId) => {
   }
 };
 
+/**
+ * Guarda una nueva empresa.
+ * @param {Object} empresa - La información de la empresa a guardar.
+ * @returns {Promise<Object>} - La empresa guardada.
+ * @throws {Error} - Se lanza un error si hay algún problema al guardar la empresa.
+ */
 const guardarEmpresa = async (empresa) => {
   try {
     const nuevaEmpresa = new Empresa(empresa);
@@ -28,6 +45,13 @@ const guardarEmpresa = async (empresa) => {
   }
 };
 
+/**
+ * Actualiza una empresa por su ID con nuevos datos.
+ * @param {string} idEmpresaActual - El ID de la empresa a actualizar.
+ * @param {Object} datosEmpresaActualizado - Los nuevos datos para la empresa.
+ * @returns {Promise<Object|null>} - La empresa actualizada o null si no se encuentra ninguna empresa con el ID dado.
+ * @throws {Error} - Se lanza un error si hay algún problema al actualizar la empresa por su ID.
+ */
 const actualizarEmpresaId = async (idEmpresaActual, datosEmpresaActualizado) => {
   try {
     const empresaActualizada = await Empresa.findByIdAndUpdate(
@@ -41,6 +65,12 @@ const actualizarEmpresaId = async (idEmpresaActual, datosEmpresaActualizado) => 
   }
 };
 
+/**
+ * Elimina una empresa por su ID.
+ * @param {string} empresaId - El ID de la empresa a eliminar.
+ * @returns {Promise<Object|null>} - La empresa eliminada o null si no se encuentra ninguna empresa con el ID dado.
+ * @throws {Error} - Se lanza un error si hay algún problema al eliminar la empresa por su ID.
+ */
 const eliminarEmpresaPorId = async (empresaId) => {
   try {
     const empresa = await Empresa.findById(empresaId);
@@ -55,6 +85,13 @@ const eliminarEmpresaPorId = async (empresaId) => {
   }
 };
 
+/**
+ * Modifica una empresa por su ID con nuevos datos.
+ * @param {string} empresaId - El ID de la empresa a modificar.
+ * @param {Object} nuevosDatos - Los nuevos datos para la empresa.
+ * @returns {Promise<Object|null>} - La empresa modificada o null si no se encuentra ninguna empresa con el ID dado.
+ * @throws {Error} - Se lanza un error si hay algún problema al modificar la empresa por su ID.
+ */
 const modificarEmpresaPorId = async (empresaId, nuevosDatos) => {
   try {
     const empresaModificada = await Empresa.findByIdAndUpdate(

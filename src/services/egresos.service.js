@@ -3,12 +3,9 @@ const categoriaModel = require("../models/categoria.model");
 const terceroModel = require("../models/terceros.Model");
 const counterService = require("../services/counter.service");
 
-const obtenerEgresos = async (token) => {
+const obtenerEgresos = async (tenantId) => {
   try {
-    // Verificar y obtener el tenantId desde el token
-    const decodedToken = jwt.verify(token, 'tu_secreto');
-    const tenantId = decodedToken.tenantId;
-
+   
     // Verificar que el tenantId coincide con el tenantId de los egresos
     const egresosExisten = await Egreso.exists({ tenantId });
 

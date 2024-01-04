@@ -35,11 +35,10 @@ egresosController.obtenerEgresoPorId = async (req, res) => {
 
 egresosController.obtenerEgresos = async (req, res) => {
   try {
-    // Obtener el token desde el encabezado de autorización
-    const token = req.headers.authorization;
+    const tenantId = req.tenantId;
 
     // Obtener la lista de egresos usando el servicio
-    const listaEgresos = await obtenerEgresos(token);
+    const listaEgresos = await obtenerEgresos(tenantId);
 
     // Responder con la lista de egresos
     ResponseStructure.status = 200;

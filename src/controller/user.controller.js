@@ -84,7 +84,7 @@ userController.eliminarUsuarioPorId = async (req, res) => {
   try {
     const userId = req.params.id;
     const tenantId = req.tenantId;
-    const usuarioEliminado = await eliminarUsuarioPorId(userId, tenantId);
+    const usuarioEliminado = await eliminarUsuarioPorId(tenantId, userId);
 
     ResponseStructure.status = 200;
     ResponseStructure.message = "Usuario eliminado exitosamente";
@@ -102,10 +102,12 @@ userController.eliminarUsuarioPorId = async (req, res) => {
 
 userController.modificarUsuarioPorId = async (req, res) => {
   try {
+    const userId = req.params.id;
     const nuevosDatos = req.body;
     const token = req.headers.authorization;
 
     const { usuarioModificado, redirectToLogin } = await modificarUsuarioPorId(
+      userId,
       token,
       nuevosDatos,
     );

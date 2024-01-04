@@ -10,7 +10,12 @@ const getCategoriasPredeterminadas=async()=>{
   return categorias;
 }
 
-
+/**
+ * Obtiene todas las categorías, incluyendo las predeterminadas globales y las específicas del inquilino.
+ * @param {string} tenantId - Identificador único del inquilino.
+ * @returns {Promise<Array>} - Un array que contiene todas las categorías.
+ * @throws {Error} - Si hay algún error durante el proceso.
+ */
 const obtenerCategorias = async (tenantId) => {
   
   const categoriasTenant = await Categoria.find({ tenantId })
@@ -23,6 +28,13 @@ const obtenerCategorias = async (tenantId) => {
   return categoriasPredeterminadas;
 };
 
+/**
+ * Obtiene una categoría por su ID y tenantId.
+ * @param {string} categoriaId - Identificador único de la categoría.
+ * @param {string} tenantId - Identificador único del inquilino.
+ * @returns {Promise<Object>} - La categoría encontrada.
+ * @throws {Error} - Si hay algún error durante el proceso.
+ */
 
 const obtenerCategoriaId = async (categoriaId,tenantId) => {
   try {
@@ -43,6 +55,14 @@ const obtenerCategoriaId = async (categoriaId,tenantId) => {
   }
 };
 
+/**
+ * Guarda una nueva categoría para un inquilino específico.
+ * @param {Object} categoria - Objeto que representa la nueva categoría.
+ * @param {string} tenantId - Identificador único del inquilino.
+ * @returns {Promise<Object>} - La categoría guardada.
+ * @throws {Error} - Si hay algún error durante el proceso.
+ */
+
 const guardarCategoria = async (categoria, tenantId) => {
   // Agrega el campo tenantId al objeto de la categoría antes de guardar
   categoria.tenantId = tenantId;
@@ -59,6 +79,14 @@ const guardarCategoria = async (categoria, tenantId) => {
 
   return categoriaGuardada;
 };
+
+/**
+ * Elimina una categoría por su ID y tenantId.
+ * @param {string} categoriaId - Identificador único de la categoría.
+ * @param {string} tenantId - Identificador único del inquilino.
+ * @returns {Promise<Object>} - La categoría eliminada.
+ * @throws {Error} - Si hay algún error durante el proceso.
+ */
 
 const eliminarCategoriaId = async (categoriaId, tenantId) => {
     
@@ -85,6 +113,15 @@ const eliminarCategoriaId = async (categoriaId, tenantId) => {
   }
   
 };
+
+/**
+ * Modifica una categoría por su ID, tenantId y nuevos datos.
+ * @param {string} categoriaId - Identificador único de la categoría.
+ * @param {Object} nuevosDatos - Nuevos datos para actualizar la categoría.
+ * @param {string} tenantId - Identificador único del inquilino.
+ * @returns {Promise<Object>} - La categoría modificada.
+ * @throws {Error} - Si hay algún error durante el proceso.
+ */
 
 const modificarCategoriaPorId = async (categoriaId, nuevosDatos, tenantId) => {
   

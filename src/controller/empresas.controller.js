@@ -10,6 +10,11 @@ const { ResponseStructure } = require("../helpers/ResponseStructure");
 
 const empresasController = {};
 
+/**
+ * Obtiene una empresa por su ID.
+ * @param {Object} req - El objeto de solicitud.
+ * @param {Object} res - El objeto de respuesta.
+ */
 empresasController.obtenerEmpresaPorId = async (req, res) => {
   try {
     const empresaId = req.params.id;
@@ -21,8 +26,6 @@ empresasController.obtenerEmpresaPorId = async (req, res) => {
 
     res.status(200).json(ResponseStructure);
   } catch (error) {
-    // console.error("Error al obtener la empresa:", error);
-
     ResponseStructure.status = 404;
     ResponseStructure.message = "Empresa no encontrada";
     ResponseStructure.data = error.message;
@@ -31,21 +34,19 @@ empresasController.obtenerEmpresaPorId = async (req, res) => {
   }
 };
 
+/**
+ * Obtiene todas las empresas.
+ * @param {Object} req - El objeto de solicitud.
+ * @param {Object} res - El objeto de respuesta.
+ */
 empresasController.obtenerEmpresas = async (req, res) => {
   try {
     const listaEmpresas = await obtenerEmpresas();
-    ResponseStructure.status = 200
+    ResponseStructure.status = 200;
     ResponseStructure.message = "Empresas encontradas exitosamente";
     ResponseStructure.data = listaEmpresas;
-    res.status(200).send(ResponseStructure);
+    res.status(200).json(ResponseStructure);
   } catch (error) {
-    // const errorsCatch = error.errors;
-    // const errors = {};
-
-    // for (let i in errorsCatch) {
-    //   errors[i] = errorsCatch[i].message;
-    // }
-
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al obtener empresas";
     ResponseStructure.data = error.message;
@@ -54,6 +55,11 @@ empresasController.obtenerEmpresas = async (req, res) => {
   }
 };
 
+/**
+ * Guarda una nueva empresa.
+ * @param {Object} req - El objeto de solicitud.
+ * @param {Object} res - El objeto de respuesta.
+ */
 empresasController.guardarEmpresa = async (req, res) => {
   try {
     const nuevaEmpresa = {
@@ -71,8 +77,6 @@ empresasController.guardarEmpresa = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    // console.error("Error en el controlador al guardar la empresa:", error);
-
     const status = error.name === "ValidationError" ? 400 : 500;
 
     ResponseStructure.status = status;
@@ -85,6 +89,11 @@ empresasController.guardarEmpresa = async (req, res) => {
   }
 };
 
+/**
+ * Elimina una empresa por su ID.
+ * @param {Object} req - El objeto de solicitud.
+ * @param {Object} res - El objeto de respuesta.
+ */
 empresasController.eliminarEmpresaPorId = async (req, res) => {
   try {
     const empresaId = req.params.id;
@@ -96,16 +105,6 @@ empresasController.eliminarEmpresaPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    // console.log(error);
-    // let status = 500;
-    // let message = "Error al eliminar la empresa";
-    // let data = {};
-
-    // if (error.message === "Empresa no encontrada") {
-    //   status = 404;
-    //   message = "Empresa no encontrada";
-    // } 
-
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al eliminar empresa";
     ResponseStructure.data = error.message;
@@ -114,11 +113,16 @@ empresasController.eliminarEmpresaPorId = async (req, res) => {
   }
 };
 
+/**
+ * Modifica una empresa por su ID con nuevos datos.
+ * @param {Object} req - El objeto de solicitud.
+ * @param {Object} res - El objeto de respuesta.
+ */
 empresasController.modificarEmpresaPorId = async (req, res) => {
   try {
     const nuevosDatos = req.body;
     const empresaId = req.params.id;
-    
+
     const empresaModificada = await modificarEmpresaPorId(
       empresaId,
       nuevosDatos,
@@ -130,14 +134,6 @@ empresasController.modificarEmpresaPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    // const errorsCatch = error.errors;
-    // const errors = {};
-
-    // for (let i in errorsCatch) {
-    //   errors[i] = errorsCatch[i].message;
-    // }
-    // console.error("Error al modificar la empresa:", error);
-
     ResponseStructure.status = 400;
     ResponseStructure.message = "Error al modificar la empresa";
     ResponseStructure.data = error.message;

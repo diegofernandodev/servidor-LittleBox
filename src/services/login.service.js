@@ -4,13 +4,19 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require("nodemailer");
 const mail = require('@sendgrid/mail');
-const { addToRevokedTokens, isTokenRevoked } = require('../helpers/token-blacklist');
 const { listaNegraService } = require('../services/blackList.service');
 
-
+/**
+ * Autentica al usuario con las credenciales proporcionadas y devuelve un token de autenticación.
+ * @param {string} email - Correo electrónico del usuario.
+ * @param {string} password - Contraseña del usuario.
+ * @returns {Promise<{ success: string, token: string, tenantId: string }>} - Objeto con información de éxito, token y tenantId.
+ * @throws {Error} - Se lanza un error si las credenciales son incorrectas o si ocurre un error en el proceso.
+ */
 const loginUser = async (email, password) => {
   try {
     console.log(`Intentando iniciar sesión para el usuario con email: ${email}`);
+    
     // Verificar que el email coincida
     const user = await User.findOne({ email });
 
@@ -20,7 +26,6 @@ const loginUser = async (email, password) => {
 
     // Comparar la contraseña hasheada
     const passwordMatch = await bcrypt.compare(password, user.password);
-    console.log('Password match:', passwordMatch);
 
     if (!passwordMatch) {
       throw new Error('Error en usuario/contraseña: Contraseña incorrecta.');
@@ -35,6 +40,11 @@ const loginUser = async (email, password) => {
   }
 };
 
+/**
+ * Crea un token de autenticación utilizando la información del usuario.
+ * @param {Object} user - Objeto de usuario con información como _id, email y tenantId.
+ * @returns {string} - Token de autenticación.
+ */
 const crearToken = (user) => {
   const { _id, email, tenantId } = user;
 
@@ -46,18 +56,14 @@ const crearToken = (user) => {
   return token;
 };
 
+/**
+ * Cierra la sesión del usuario revocando un token y realizando otras operaciones de cierre de sesión.
+ * @param {string} token - Token de autenticación a revocar.
+ * @returns {Promise<{ success: boolean, message: string }>} - Objeto con información de éxito y mensaje.
+ * @throws {Error} - Se lanza un error si ocurre un problema durante el proceso.
+ */
 const logout = async (token) => {
-  
   try {
-
-    console.log('Token recibido en el servicio de logout:', token);
-
-    // // Verificar si el token está en la lista negra
-    // if (isTokenRevoked(token)) {
-    //   console.log('Token ya revocado.');
-    //   throw new Error('Token already revoked.');
-    // }
-
     // Verificar si el token está en la lista negra en la base de datos
     const tokenEnListaNegra = await listaNegraService.tokenEnListaNegra(token);
     if (tokenEnListaNegra) {
@@ -66,7 +72,6 @@ const logout = async (token) => {
     }
 
     // Agregar el token a la lista negra
-    // addToRevokedTokens(token);
     await listaNegraService.agregarToken(token);
     console.log('Token agregado a la lista negra:', token);
 
@@ -79,7 +84,17 @@ const logout = async (token) => {
   }
 }
 
+/**
+ * Objeto para manejar el proceso de restablecimiento de contraseña.
+ */
 const resetPassword = {
+  /**
+   * Genera un token de restablecimiento de contraseña y envía un correo electrónico al usuario.
+   * @param {string} email - Correo electrónico del usuario.
+   * @param {string} tenantId - ID del tenant al que pertenece el usuario.
+   * @returns {Promise<string>} - Token de restablecimiento de contraseña.
+   * @throws {Error} - Se lanza un error si el usuario no se encuentra o si ocurre un error durante el proceso.
+   */
   generateToken: async (email, tenantId) => {
     try {
       const user = await User.findOne({ email, tenantId });
@@ -105,9 +120,6 @@ const resetPassword = {
       // Llama a la función sendEmail con el token y el usuario
       await resetPassword.sendEmail(email, user, token);
 
-      // // Llama a la función sendEmail 
-      // await resetPassword.sendEmail(email, token);
-
       return token;
     } catch (error) {
       console.error('Error al generar el token de restablecimiento de contraseña:', error);
@@ -115,9 +127,14 @@ const resetPassword = {
     }
   },
 
+  /**
+   * Envía un correo electrónico al usuario con un enlace para restablecer la contraseña.
+   * @param {string} email - Correo electrónico del usuario.
+   * @param {Object} token - Token de restablecimiento de contraseña.
+   * @returns {Promise<{ success: boolean, message: string }>} - Objeto con información de éxito y mensaje.
+   * @throws {Error} - Se lanza un error si ocurre un problema durante el envío del correo electrónico.
+   */
   sendEmail: async (email, token) => {
-
-    console.log("dentro de sendEmail", token);
     try {
       const config = {
         host: "smtp.gmail.com",
@@ -138,12 +155,8 @@ const resetPassword = {
         from: "littleboxx23@gmail.com",
         to: email,
         subject: 'Restablecimiento de contraseña',
-        // text: `Para restablecer tu contraseña, utiliza el siguiente token: ${token}`,
-        text: `Para restablecer tu contraseña, haz clic en el siguiente enlace:
-          ${url}`,
-
+        text: `Para restablecer tu contraseña, haz clic en el siguiente enlace:\n${url}`,
       }
-
 
       // Envía el correo electrónico utilizando el mismo transporte
       const info = await transport.sendMail(mensaje);
@@ -158,14 +171,21 @@ const resetPassword = {
   },
 };
 
-
+/**
+ * Objeto para manejar el proceso de restablecimiento de contraseña.
+ */
 const restablecerPassword = {
+  /**
+   * Procesa un token de restablecimiento de contraseña y actualiza la contraseña del usuario.
+   * @param {string} token - Token de restablecimiento de contraseña.
+   * @param {string} password - Nueva contraseña del usuario.
+   * @returns {Promise<Object>} - Objeto de usuario con la contraseña actualizada.
+   * @throws {Error} - Se lanza un error si el token es inválido o si ocurre un problema durante el proceso.
+   */
   processResetToken: async (token, password) => {
     try {
       // Decodificar el token para obtener la información del usuario (en este caso, el correo electrónico)
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-      console.log("informacion del token", decodedToken);
 
       // Buscar el usuario en la base de datos por el correo electrónico
       const user = await User.findOne({ email: decodedToken.email });

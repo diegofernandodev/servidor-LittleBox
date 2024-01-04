@@ -8,11 +8,18 @@ const {
 const { ResponseStructure } = require("../helpers/ResponseStructure");
 const categoriasController = {};
 
+/**
+ * Obtiene una categoría por su ID y tenantId.
+ * @param {Object} req - Objeto de solicitud.
+ * @param {Object} res - Objeto de respuesta.
+ * @returns {Object} - Objeto de respuesta con la categoría encontrada.
+ */
+
 categoriasController.obtenerCategoriaId = async (req, res) => {
   try {
     const categoriaId = req.params.id;
     const tenantId = req.tenantId;
-    const verCategoria = await obtenerCategoriaId(categoriaId,tenantId);
+    const verCategoria = await obtenerCategoriaId(categoriaId, tenantId);
     ResponseStructure.status = 200;
     ResponseStructure.message = "Categoria encontrada exitosamente";
     ResponseStructure.data = verCategoria;
@@ -29,6 +36,13 @@ categoriasController.obtenerCategoriaId = async (req, res) => {
   }
 };
 
+/**
+ * Obtiene todas las categorías para un inquilino específico.
+ * @param {Object} req - Objeto de solicitud.
+ * @param {Object} res - Objeto de respuesta.
+ * @returns {Object} - Objeto de respuesta con la lista de categorías.
+ */
+
 categoriasController.obtenerCategorias = async (req, res) => {
   try {
     const tenantId = req.tenantId;
@@ -37,12 +51,6 @@ categoriasController.obtenerCategorias = async (req, res) => {
     ResponseStructure.data = listaCategorias;
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    // const errorsCatch = error.errors;
-    // const errors = {};
-
-    // for (let i in errorsCatch) {
-    //   errors[i] = errorsCatch[i].message;
-    // }
 
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al obtener categorias";
@@ -52,26 +60,27 @@ categoriasController.obtenerCategorias = async (req, res) => {
   }
 };
 
+/**
+ * Guarda una nueva categoría para un inquilino específico.
+ * @param {Object} req - Objeto de solicitud.
+ * @param {Object} res - Objeto de respuesta.
+ * @returns {Object} - Objeto de respuesta con la categoría guardada.
+ */
+
 categoriasController.guardarCategoria = async (req, res) => {
   try {
     const newCategoria = {
       ...req.body,
-      // tenantId: req.tenantId,
     };
     const tenantId = req.tenantId;
-    const categoriaGuardada = await guardarCategoria(newCategoria,tenantId);
+    const categoriaGuardada = await guardarCategoria(newCategoria, tenantId);
     ResponseStructure.status = 200;
     ResponseStructure.message = "Categoria guardada exitosamente";
     ResponseStructure.data = categoriaGuardada;
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    // const errorsCatch = error.errors;
-    // const errors = {};
 
-    // for (let i in errorsCatch) {
-    //   errors[i] = errorsCatch[i].message;
-    // }
 
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al guardar la categoria";
@@ -81,13 +90,19 @@ categoriasController.guardarCategoria = async (req, res) => {
   }
 };
 
+/**
+ * Elimina una categoría por su ID y tenantId.
+ * @param {Object} req - Objeto de solicitud.
+ * @param {Object} res - Objeto de respuesta.
+ * @returns {Object} - Objeto de respuesta con la categoría eliminada.
+ */
 
 categoriasController.eliminarCategoriaId = async (req, res) => {
   try {
     const categoriaId = req.params.id;
     const tenantId = req.tenantId;
-    
-    const categoriaEliminada = await eliminarCategoriaId(categoriaId,tenantId);
+
+    const categoriaEliminada = await eliminarCategoriaId(categoriaId, tenantId);
     ResponseStructure.status = 200;
     ResponseStructure.message = "Categoria eliminada exitosamemte";
     ResponseStructure.data = categoriaEliminada;
@@ -97,19 +112,25 @@ categoriasController.eliminarCategoriaId = async (req, res) => {
     ResponseStructure.status = 500;
     ResponseStructure.message = "Error al eliminar la categoria";
     ResponseStructure.data = error.message;
-  
+
     res.status(500).json(ResponseStructure);
   }
 };
 
+/**
+ * Modifica una categoría por su ID, tenantId y nuevos datos.
+ * @param {Object} req - Objeto de solicitud.
+ * @param {Object} res - Objeto de respuesta.
+ * @returns {Object} - Objeto de respuesta con la categoría modificada.
+ */
+
 categoriasController.modificarCategoriaPorId = async (req, res) => {
-  // const categoriaId = req.params.id;
 
   try {
     const nuevosDatos = req.body;
     const categoriaId = req.params.id;
     const tenantId = req.tenantId;
-    
+
     const categoriaModificada = await modificarCategoriaPorId(
       categoriaId,
       nuevosDatos,
@@ -121,12 +142,6 @@ categoriasController.modificarCategoriaPorId = async (req, res) => {
 
     res.status(200).send(ResponseStructure);
   } catch (error) {
-    // const errorsCatch = error.errors;
-    // const errors = {};
-
-    // for (let i in errorsCatch) {
-    //   errors[i] = errorsCatch[i].message;
-    // }
 
     ResponseStructure.status = 400;
     ResponseStructure.message = "Error al modificar la categoria";
