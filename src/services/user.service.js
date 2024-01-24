@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require("nodemailer");
 const mail = require('@sendgrid/mail');
+const {tokenSign,verifyToken} = require("../helpers/generateToken")
 
 /**
  * Función para guardar un nuevo usuario en la base de datos.
@@ -141,7 +142,7 @@ const eliminarUsuarioPorId = async (tenantId, userId) => {
   const modificarUsuarioPorId = async (userId, token, nuevosDatos) => {
     try {
       // Decodificar el token para obtener la información del usuario (en este caso, userId, tenantId, email)
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+      const decodedToken = await verifyToken(token);
   
       console.log('Datos recibidos:', nuevosDatos);
   

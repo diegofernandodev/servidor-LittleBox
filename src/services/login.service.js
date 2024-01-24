@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const nodemailer = require("nodemailer");
 const mail = require('@sendgrid/mail');
 const { listaNegraService } = require('../services/blackList.service');
+const {tokenSign,verifyToken} = require("../helpers/generateToken")
 
 /**
  * Autentica al usuario con las credenciales proporcionadas y devuelve un token de autenticación.
@@ -32,8 +33,8 @@ const loginUser = async (email, password) => {
     }
 
     // Crear y devolver el token de autenticación
-    const token = crearToken(user);
-    return { success: 'Login correcto', token, tenantId: user.tenantId }; // Incluir tenantId en la respuesta
+    const token = await tokenSign(user);
+    return { success: 'Login correcto', token, tenantId: user.tenantId, rol: user.rol }; // Incluir tenantId en la respuesta
   } catch (error) {
     console.error(error);
     throw new Error(`Error al iniciar sesión: ${error.message}`);
@@ -103,17 +104,18 @@ const resetPassword = {
         throw new Error('Usuario no encontrado.');
       }
 
-      const tokenData = {
-        email,
-        userId: user._id, // Agrega la propiedad userId aquí
-        tenantId,
-      };
+      // const tokenData = {
+      //   email,
+      //   userId: user._id, // Agrega la propiedad userId aquí
+      //   tenantId,
+      // };
 
-      const token = jwt.sign(
-        tokenData,
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
+      // const token = jwt.sign(
+      //   tokenData,
+      //   process.env.JWT_SECRET,
+      //   { expiresIn: '1h' }
+      // );
+      const token = await tokenSign(user);
 
       console.log("Token generado:", token);
 
@@ -185,7 +187,7 @@ const restablecerPassword = {
   processResetToken: async (token, password) => {
     try {
       // Decodificar el token para obtener la información del usuario (en este caso, el correo electrónico)
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+      const decodedToken = await verifyToken(token);
 
       // Buscar el usuario en la base de datos por el correo electrónico
       const user = await User.findOne({ email: decodedToken.email });

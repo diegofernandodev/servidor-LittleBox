@@ -1,6 +1,7 @@
 // Importación de módulos y configuraciones necesarios para el servidor
 const express = require("express");
 const session = require('express-session');
+const routesSolicitudes = require("../routes/solicitudes.routes");
 const routesEgresos = require("../routes/egresos.routes");
 const routesCategorias = require("../routes/categorias.routes");
 const routesTerceros = require("../routes/terceros.routes");
@@ -34,6 +35,7 @@ appLittlebox.use(routesLogin);
 appLittlebox.use(verificarTokenMiddleware);
 appLittlebox.use(routesEmpresas);
 appLittlebox.use(routesCategorias);
+appLittlebox.use(routesSolicitudes);
 appLittlebox.use(routesEgresos);
 appLittlebox.use(routesTerceros);
 appLittlebox.use(routesUsers);
