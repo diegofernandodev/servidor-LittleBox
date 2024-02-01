@@ -8,25 +8,27 @@ const {
     modificarCategoriaPorId,
 } = require("../controller/categorias.controller");
 
-const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
+// const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
+const verificarTokenMiddleware = require('../middleware/validarTokenMiddleware');
+const checkRoleAuth = require('../middleware/roleAuth');
 
 router.get("/", (req, res) => {
   res.send("LittleBox");
 });
 
 // Ruta para obtener todas las categorias
-router.get("/obtenerTodasLasCategorias", multitenancyMiddleware, obtenerCategorias);
+router.get("/obtenerTodasLasCategorias", verificarTokenMiddleware,checkRoleAuth(['gerente,administrador,colaborador']), obtenerCategorias);
 
 // Ruta para obtener una categoria por su ID
-router.get("/obtenerCategoria/:id",multitenancyMiddleware, obtenerCategoriaId);
+router.get("/obtenerCategoria/:id",verificarTokenMiddleware,checkRoleAuth(['gerente,administrador,colaborador']), obtenerCategoriaId);
 
 // Ruta para modificar una categoria por su ID
-router.put("/modificarCategoria/:id",multitenancyMiddleware, modificarCategoriaPorId);
+router.put("/modificarCategoria/:id",verificarTokenMiddleware,checkRoleAuth(['gerente,administrador,colaborador']), modificarCategoriaPorId);
 
 // Ruta para eliminar una categoria por su ID
-router.delete("/eliminarCategoria/:id",multitenancyMiddleware, eliminarCategoriaId);
+router.delete("/eliminarCategoria/:id",verificarTokenMiddleware,checkRoleAuth(['gerente,administrador']), eliminarCategoriaId);
 
 // Ruta para guardar una nueva categoria
-router.post("/guardarCategoria",multitenancyMiddleware, guardarCategoria);
+router.post("/guardarCategoria",verificarTokenMiddleware,checkRoleAuth(['gerente,administrador']), guardarCategoria);
 
 module.exports = router;

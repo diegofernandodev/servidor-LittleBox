@@ -94,6 +94,7 @@ const obtenerUsuarioPorId = async (userId, tenantId) => {
           path: "rol",
           model: rolModel,
         });
+  
       return user;
     } catch (error) {
       if (error.name === 'CastError' && error.path === '_id') {
@@ -182,6 +183,26 @@ const eliminarUsuarioPorId = async (tenantId, userId) => {
     }
   };
 
+  const aprobarRechazarSolicitud = async (idSolicitud, nuevoEstado, usuario) => {
+  const solicitud = await Solicitud.findById(idSolicitud);
+
+  if (!solicitud) {
+    throw new Error('Solicitud no encontrada');
+  }
+
+  if (solicitud.estado !== 'pendiente') {
+    throw new Error('La solicitud ya ha sido procesada');
+  }
+
+  // Verificar si el usuario tiene el rol de administrador
+  if (usuario.rol === 'administrador') {
+    solicitud.estado = nuevoEstado;
+    const solicitudActualizada = await solicitud.save();
+    return solicitudActualizada;
+  } else {
+    throw new Error('Usuario no tiene permisos para aprobar/rechazar esta solicitud');
+  }
+};
 
 module.exports = {
     guardarUsuario,

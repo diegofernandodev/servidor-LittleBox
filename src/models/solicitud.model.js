@@ -59,10 +59,11 @@ const solicitudSchema = new Schema({
         max: [100000, "El precio debe ser inferior a cien mil pesos"],
       },
       estado: { 
-        type: String, 
-        enum: ['pendiente', 'aprobado', 'rechazado'], 
-        default: 'pendiente' 
-      },
+        type: Schema.Types.ObjectId,
+        ref: "estadoSolicitud",
+        required: [true, "El estado de la solicitud es requerido"], 
+        default: '65b474a5999f90ef862d978c' 
+    },
       factura: { 
         type: String 
       },

@@ -5,7 +5,8 @@ const {
     obtenerSolicitudesPorId,
     guardarSolicitud,
     eliminarSolicitudPorId,
-    modificarSolicitudPorId
+    modificarSolicitudPorId,
+    cambiarEstadoSolicitud,
 } = require("../controller/solicitud.controller");
 
 // const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
@@ -18,18 +19,21 @@ router.get("/", (req, res) => {
 });
 
 // Ruta para obtener todas las solicitudes
-router.get("/obtenerTodasLasSolicitudes", verificarTokenMiddleware,obtenerSolicitudes);
+router.get("/obtenerTodasLasSolicitudes", verificarTokenMiddleware,checkRoleAuth(['gerente', 'administrador', 'colaborador']),obtenerSolicitudes);
 
 // Ruta para obtener una solicitud por su ID
-router.get("/obtenerSolicitud/:id", verificarTokenMiddleware,obtenerSolicitudesPorId);
+router.get("/obtenerSolicitud/:id", verificarTokenMiddleware,checkRoleAuth(['administrador']),obtenerSolicitudesPorId);
 
 // Ruta para modificar una solicitud por su ID
-router.put("/modificarSolicitud/:id", verificarTokenMiddleware, checkRoleAuth(['administrador']), modificarSolicitudPorId);
+router.put("/modificarSolicitud/:id", verificarTokenMiddleware, checkRoleAuth(['gerente', 'administrador']), modificarSolicitudPorId);
+
+// Ruta para modificar estado de una solicitud por su ID
+router.put("/modificarEstadoSolicitud/:id", verificarTokenMiddleware, checkRoleAuth(['gerente', 'administrador']), cambiarEstadoSolicitud);
 
 // Ruta para eliminar una solicitud por su ID
-router.delete("/eliminarSolicitud/:id", verificarTokenMiddleware,  eliminarSolicitudPorId);
+router.delete("/eliminarSolicitud/:id", verificarTokenMiddleware,checkRoleAuth(['gerente']),eliminarSolicitudPorId);
 
 // Ruta para guardar una solicitud por su ID
-router.post("/guardarSolicitud", verificarTokenMiddleware,  guardarSolicitud);
+router.post("/guardarSolicitud", verificarTokenMiddleware,checkRoleAuth(['administrador']),guardarSolicitud);
 
 module.exports = router;

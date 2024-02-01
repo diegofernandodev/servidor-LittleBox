@@ -8,8 +8,9 @@ const {
   guardarEgreso,
 } = require("../controller/egresos.controller");
 
-const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
+// const multitenancyMiddleware = require("../middleware/multitenancyMiddleware");
 const verificarTokenMiddleware = require('../middleware/validarTokenMiddleware');
+const checkRoleAuth = require('../middleware/roleAuth');
 
 
 router.get("/", (req, res) => {
@@ -17,18 +18,18 @@ router.get("/", (req, res) => {
 });
 
 // Ruta para obtener todos los egresos
-router.get("/obtenerTodosLosEgresos", multitenancyMiddleware,obtenerEgresos);
+router.get("/obtenerTodosLosEgresos", verificarTokenMiddleware,checkRoleAuth(['administrador']),obtenerEgresos);
 
 // Ruta para obtener un egreso por su ID
-router.get("/obtenerEgreso/:id", multitenancyMiddleware,obtenerEgresoPorId);
+router.get("/obtenerEgreso/:id", verificarTokenMiddleware,checkRoleAuth(['gerente,administrador,colaborador']),obtenerEgresoPorId);
 
 // Ruta para modificar un egreso por su ID
-router.put("/modificarEgreso/:id", multitenancyMiddleware,modificarEgresoPorId);
+router.put("/modificarEgreso/:id", verificarTokenMiddleware,checkRoleAuth(['gerente,administrador']),modificarEgresoPorId);
 
 // Ruta para eliminar un egreso por su ID
-router.delete("/eliminarEgreso/:id", multitenancyMiddleware,eliminarEgresoPorId);
+router.delete("/eliminarEgreso/:id", verificarTokenMiddleware,checkRoleAuth(['gerente']),eliminarEgresoPorId);
 
 // Ruta para guardar un nuevo egreso
-router.post("/guardarEgreso", verificarTokenMiddleware,guardarEgreso);
+router.post("/guardarEgreso", verificarTokenMiddleware,checkRoleAuth(['administrador']),guardarEgreso);
 
 module.exports = router;

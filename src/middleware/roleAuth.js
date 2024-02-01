@@ -29,6 +29,7 @@
 
 const { verifyToken } = require('../helpers/generateToken');
 const userModel = require('../models/user.model');
+const rolUsuario = require("../models/rolesUser.Model");
 
 const checkRoleAuth = (allowedRoles) => async (req, res, next) => {
     try {
@@ -48,7 +49,10 @@ const checkRoleAuth = (allowedRoles) => async (req, res, next) => {
 
         const userData = await userModel
             .findById(tokenData.userId)
-            .populate('rol');
+            .populate({
+                path: "rol",
+                model: rolUsuario,
+              });
 
         if (!userData) {
             // Si no se encuentra el usuario, devolver un error

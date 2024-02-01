@@ -7,6 +7,12 @@ const egresoSchema = new Schema({
     autoIncrement: true,
   },
 
+  solicitudId: {
+    type: Number,
+    required: false,
+    // autoIncrement: true,
+  },
+
   tenantId: {
     type: String,
     required: true,
@@ -57,6 +63,9 @@ const egresoSchema = new Schema({
     },
     min: [1000, "El precio debe ser superior a mil pesos"],
     max: [100000, "El precio debe ser inferior a cien mil pesos"],
+  },
+  factura: { 
+    type: String 
   },
 });
 
